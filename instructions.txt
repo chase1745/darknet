@@ -1,0 +1,9 @@
+Go to this link and download FullIJCNN2013.zip https://sid.erda.dk/public/archives/ff17dc924eba88d5d01a807357d6614c/published-archive.html
+Unzip and rename folder to tsr_data, place folder in darknet/data/
+go to darknet/data/scripts directory and run images.py (may need to install Pillow, I installed with Pip, idk what you use with Windows)
+run labels.py
+Move tsr.names and tsr.data to tsr_data directory
+Open tsr.data and replace '/Users/timmcdermott/Documents/CSCE482/' with the path to your files
+Download https://pjreddie.com/media/files/darknet53.conv.74 and save in darknet/
+run `darknet.exe detector train data/tsr_data/tsr.data cfg/yolo-tsr.cfg darknet53.conv.74`
+Should be good to run. This explains the output: https://github.com/AlexeyAB/darknet#when-should-i-stop-training
