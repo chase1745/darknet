@@ -56,3 +56,5 @@ uselib_track
 darknet
 
 data/tsr_data/
+
+darknet53*
