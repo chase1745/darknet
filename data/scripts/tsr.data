@@ -1,4 +1,4 @@
-classes= 43
+classes= 6
 train  = /Users/timmcdermott/Documents/CSCE482/darknet/data/tsr_data/train.txt
 valid  = /Users/timmcdermott/Documents/CSCE482/darknet/data/tsr_data/valid.txt
 names = /Users/timmcdermott/Documents/CSCE482/darknet/data/tsr_data/tsr.names

@@ -1,14 +1,19 @@
 Download thse requirements: https://github.com/AlexeyAB/darknet#requirements
 Follow these instructions to build the project: https://github.com/AlexeyAB/darknet#how-to-compile-on-linux-using-cmake
 Go to this link and download FullIJCNN2013.zip https://sid.erda.dk/public/archives/ff17dc924eba88d5d01a807357d6614c/published-archive.html
-Unzip and rename folder to tsr_data, place folder in darknet/data/
-
+Unzip download ^
+Go to darknet/ directory and run: `mkdir data/tsr_data && mkdir data/tsr_data/train && mkdir data/tsr_data/test && touch data/tsr_data/train.txt && touch data/tsr_data/test.txt`
+Go back one directory from darknet/ and run `git clone https://github.com/chase1745/Datasets2Darknet.git`
+Go to line 18 in Datasets2Darknet/src/general_parser.py and replace my path with the path to your darknet directory
+Go to line 10 in Datasets2Darknet/src/gtsdb_parser.py and replace my path with the path to your FullIJCNN2013 download directory
 apt install python3-pip
-`pip install Pillow`
-
-Run `mv data/scripts/tsr.names data/tsr_data/tsr.names` and `mv data/scripts/tsr.names data/tsr_data/tsr.names`
-Open tsr.data and replace '/Users/timmcdermott/Documents/CSCE482/' with the path to your files
+Run `pip install Pillow && pip install click && pip install opencv-python && pip install numpy && pip install matplotlib`
+Go to Datasets2Darknet/src/ and run `python general_parser.py`
+You may have to pip install other packages if it gives you errors for missing them but I think i got them all there.
+Go back to darknet/ directory
+Run `cp data/scripts/tsr.names data/tsr_data/tsr.names && cp data/scripts/tsr.data data/tsr_data/tsr.data`
+Open tsr.data and replace '/Users/timmcdermott/Documents/CSCE482/' with the path to your darknet directory
 Go to darknet/ and run `wget https://pjreddie.com/media/files/darknet53.conv.74`
-run `./darknet detector train data/tsr_data/tsr.data cfg/yolo-tsr.cfg darknet53.conv.74`
+run `./darknet detector train data/tsr_data/tsr.data cfg/yolo-tsr.cfg darknet53.conv.74` to start training
 Should be good to run. This explains the output: https://github.com/AlexeyAB/darknet#when-should-i-stop-training.
 We want the Avg loss that prints every iteration to get really low, like below .1 I think. This probably won't happen until after at least 1000 iterations
