@@ -12,7 +12,7 @@ Go to Datasets2Darknet/src/ and run `python general_parser.py`
 You may have to pip install other packages if it gives you errors for missing them but I think i got them all there.
 Go back to darknet/ directory
 Run `cp data/scripts/tsr.names data/tsr_data/tsr.names && cp data/scripts/tsr.data data/tsr_data/tsr.data`
-Open tsr.data and replace '/Users/timmcdermott/Documents/CSCE482/' with the path to your darknet directory
+Open data/tsr_data/tsr.data and replace '/Users/timmcdermott/Documents/CSCE482/' with the path to your darknet directory
 Go to darknet/ and run `wget https://pjreddie.com/media/files/darknet53.conv.74`
 run `./darknet detector train data/tsr_data/tsr.data cfg/yolo-tsr.cfg darknet53.conv.74` to start training
 Should be good to run. This explains the output: https://github.com/AlexeyAB/darknet#when-should-i-stop-training.
