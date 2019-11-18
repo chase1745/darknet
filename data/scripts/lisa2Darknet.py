@@ -31,7 +31,7 @@ def write_data(filename, input_img, darknet_format, text_file, output_dir):
     with open(output_file_path + '.txt', "a+") as f:
         f.write(darknet_format)
 
-def calculate_darknet_format(input_img, row):
+def calculate_darknet_format(input_img, row, labelNums):
     real_img_width, real_img_height = input_img.size
     image_width = int(real_img_width)
     image_height = int(real_img_height)
@@ -41,7 +41,7 @@ def calculate_darknet_format(input_img, row):
     right_x = float(row[4])# / image_width
     top_y = float(row[5])# / image_height
 
-    object_class = row[1]
+    object_class = labelNums[row[1]]
 
     # print(object_class, image_width, image_height, left_x, right_x, bottom_y, top_y)
 
@@ -69,12 +69,12 @@ def parse_darknet_format(object_class, img_width, img_height, left_x, bottom_y, 
 
 anFile = open(ANNOTATIONS_FILE_PATH)  # Annotations file
 gtReader = csv.reader(anFile, delimiter=';')
-train_text_file = open(LISA_NEW_DATA_PATH + 'train.txt', "a+")
-test_text_file = open(LISA_NEW_DATA_PATH + 'test.txt', "a+")
+train_text_file = open(LISA_NEW_DATA_PATH + 'train.txt', "w+")
+test_text_file = open(LISA_NEW_DATA_PATH + 'test.txt', "w+")
 output_train_dir_path = LISA_NEW_DATA_PATH + 'train/'
 output_test_dir_path = LISA_NEW_DATA_PATH + 'test/'
 
-labels = defaultdict(int)
+labels = defaultdict(list)
 num_train_files, num_test_files = 0, 0
 
 # Get all annotations
@@ -84,29 +84,36 @@ for line in gtReader:
     filename = line[0].split("/")[-1][:-4]
     file_path = LISA_DOWNLOAD_PATH + line[0]
     label = line[1]
-    labels[label] += 1
 
-    image = Image.open(file_path)
-    # Resize image
-    # resized_img = image.resize(RESIZE_TUPLE)
-    darknet_format = calculate_darknet_format(image, line)
-    # print(darknet_format)
+    labels[label].append((file_path, line))
 
-    train_file = rand.choices([True, False], [TRAIN_PERC, TEST_PERC])[0]
+# Labels must be integers in annotations, so create this map here
+labelNums = {label:i for i, label in enumerate(labels.keys())}
 
-    if train_file:
-        num_train_files += 1
-        write_data(filename, image, darknet_format, train_text_file, output_train_dir_path)
-    else:
-        num_test_files += 1
-        write_data(filename, image, darknet_format, test_text_file, output_test_dir_path)
+for imageList in labels.values():
+    for imageTuple in imageList:
+        image = Image.open(imageTuple[0])
+        line = imageTuple[1]
+
+        darknet_format = calculate_darknet_format(image, line, labelNums)
+
+        train_file = rand.choices([True, False], [TRAIN_PERC, TEST_PERC])[0]
+
+        if train_file:
+            num_train_files += 1
+            write_data(filename, image, darknet_format, train_text_file, output_train_dir_path)
+        else:
+            num_test_files += 1
+            write_data(filename, image, darknet_format, test_text_file, output_test_dir_path)
 
 print("BEFORE ADDING NEGATIVES -- Num train files: " + str(num_train_files) + ', num test files: ' + str(num_test_files))
 
 # Write all labels to lisa.names
 with open(LISA_NEW_DATA_PATH + 'lisa.names', 'w+') as f:
-    for label in labels.keys():
-        f.write(label + '\n')
+    for label, num in sorted(labelNums.items(), key=lambda x:x[1]):
+        if num > 0:
+            f.write('\n')
+        f.write(label)
 
 # Move negatives (images without labels) to test and train
 for root, dirs, files in os.walk(NEGATIVE_FILE_PATH):
@@ -131,7 +138,8 @@ for root, dirs, files in os.walk(NEGATIVE_FILE_PATH):
         # except:
             # continue
 
-print('labels: ')
+print('number of labels: ')
+print(len(labels.keys()))
 print(labels)
 
 print("AFTER ADDING NEGATIVES -- Num train files: " + str(num_train_files) + ', num test files: ' + str(num_test_files))
