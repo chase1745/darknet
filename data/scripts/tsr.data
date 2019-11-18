@@ -1,5 +1,5 @@
-classes= 6
-train  = /Users/timmcdermott/Documents/CSCE482/darknet/data/tsr_data/train.txt
-valid  = /Users/timmcdermott/Documents/CSCE482/darknet/data/tsr_data/test.txt
-names = /Users/timmcdermott/Documents/CSCE482/darknet/data/tsr_data/tsr.names
+classes= 40
+train  = /Users/timmcdermott/Documents/CSCE482/lisaData/train.txt
+valid  = /Users/timmcdermott/Documents/CSCE482/lisaData/test.txt
+names = /Users/timmcdermott/Documents/CSCE482/lisaData/tsr.names
 backup = /Users/timmcdermott/Documents/CSCE482/darknet/backup/
