@@ -108,18 +108,21 @@ with open(LISA_NEW_DATA_PATH + 'lisa.names', 'w+') as f:
 # Move negatives (images without labels) to test and train
 for root, dirs, files in os.walk(NEGATIVE_FILE_PATH):
     for file in files:
-        if file.endswith(".png"):
-            image = Image.open(os.path.join(root, file))
-            train_file = rand.choices([True, False], [TRAIN_PERC, TEST_PERC])[0]
-            if train_file:
-                num_train_files += 1
-                train_text_file.write(LISA_NEW_DATA_PATH + file.replace('.png', '.jpg'))
-                image.save(os.path.join(output_train_dir_path, file.replace('.png', '.jpg')))
+        try:
+            if file.endswith(".png"):
+                image = Image.open(os.path.join(root, file))
+                train_file = rand.choices([True, False], [TRAIN_PERC, TEST_PERC])[0]
+                if train_file:
+                    num_train_files += 1
+                    train_text_file.write(LISA_NEW_DATA_PATH + file.replace('.png', '.jpg'))
+                    image.save(os.path.join(output_train_dir_path, file.replace('.png', '.jpg')))
 
-            else:
-                num_test_files += 1
-                test_text_file.write(LISA_NEW_DATA_PATH + file.replace('.png', '.jpg'))
-                image.save(os.path.join(output_train_dir_path, file.replace('.png', '.jpg')))
+                else:
+                    num_test_files += 1
+                    test_text_file.write(LISA_NEW_DATA_PATH + file.replace('.png', '.jpg'))
+                    image.save(os.path.join(output_train_dir_path, file.replace('.png', '.jpg')))
+        except:
+            continue
 
 print('labels: ')
 print(labels)
