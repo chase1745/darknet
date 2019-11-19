@@ -2,4 +2,4 @@ classes= 11
 train  = /home/ec2-user/lisaData/train.txt
 valid  = /home/ec2-user/lisaData/test.txt
 names = /home/ec2-user/lisaData/lisa.names
-backup = /home/ec2-user/lisaData/darknet/backup
+backup = /home/ec2-user/darknet/backup
