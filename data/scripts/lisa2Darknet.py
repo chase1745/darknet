@@ -6,14 +6,27 @@ import os
 
 
 
-LISA_DOWNLOAD_PATH = '/Users/timmcdermott/Documents/signDatabasePublicFramesOnly/'
-LISA_NEW_DATA_PATH = '/Users/timmcdermott/Documents/CSCE482/lisaData/'
+LISA_DOWNLOAD_PATH = '/ec2-user/home/lisaDownload/'
+LISA_NEW_DATA_PATH = '/ec2-user/home/lisaData/'
 ANNOTATIONS_FILE_PATH = LISA_DOWNLOAD_PATH + "allAnnotations.csv"
 NEGATIVE_FILE_PATH = LISA_DOWNLOAD_PATH + 'negatives/negativePics/'
 TRAIN_PERC = .8
 TEST_PERC = 1-TRAIN_PERC
 OUTPUT_IMG_EXTENSION = '.jpg'
 RESIZE_TUPLE = (416, 416)
+LABELS_TO_USE = '''
+stop
+speedLimit25
+pedestrianCrossing
+turnLeft
+speedLimit15
+rightLaneMustTurn
+speedLimit30
+yield
+noRightTurn
+noLeftTurn
+turnRight
+'''.split('\n')
 
 
 # Saves the image received in the output file path in the OUTPUT_IMG_EXTENSION.
@@ -79,23 +92,29 @@ labels = defaultdict(list)
 num_train_files, num_test_files = 0, 0
 
 # Get all annotations
-for line in gtReader:
+print('Iterating through annnotation file...')
+for i, line in enumerate(gtReader):
     if line[0].split("/")[-1][-4:] != '.png': continue # Ignore video annotations
-
+    print('Line: ' + str(i), end="\r")
     filename = line[0].split("/")[-1][:-4]
     file_path = LISA_DOWNLOAD_PATH + line[0]
     label = line[1]
+    # Only use certain labels
+    if label not in LABELS_TO_USE: continue
 
     labels[label].append((file_path, line))
 
 # Labels must be integers in annotations, so create this map here
 labelNums = {label:i for i, label in enumerate(labels.keys())}
 
+# Go through all annotations, convert them to darknet format, and save images and txt files in correct location
+print('Converting annotations to darknet and moving all images...')
 for imageList in labels.values():
     for imageTuple in imageList:
         image = Image.open(imageTuple[0])
         line = imageTuple[1]
         filename = line[0].split("/")[-1][:-4]
+        print('Image: ' + filename, end="\r")
 
         darknet_format = calculate_darknet_format(image, line, labelNums)
 
@@ -111,6 +130,7 @@ for imageList in labels.values():
 print("BEFORE ADDING NEGATIVES -- Num train files: " + str(num_train_files) + ', num test files: ' + str(num_test_files))
 
 # Write all labels to lisa.names
+print('Writing .names file...')
 with open(LISA_NEW_DATA_PATH + 'lisa.names', 'w+') as f:
     for label, num in sorted(labelNums.items(), key=lambda x:x[1]):
         if num > 0:
@@ -118,27 +138,19 @@ with open(LISA_NEW_DATA_PATH + 'lisa.names', 'w+') as f:
         f.write(label)
 
 # Move negatives (images without labels) to test and train
-for root, dirs, files in os.walk(NEGATIVE_FILE_PATH):
-    for file in files:
-        # try:
-        if file.endswith(".png"):
-            image = Image.open(os.path.join(root, file))
-            # print(file)
-            # Resize image
-            # resized_img = image.resize(RESIZE_TUPLE)
-            train_file = rand.choices([True, False], [TRAIN_PERC, TEST_PERC])[0]
-            if train_file:
-                num_train_files += 1
-                # train_text_file.write(LISA_NEW_DATA_PATH + file.replace('.png', '.jpg'))
-                # image.save(os.path.join(output_train_dir_path, file.replace('.png', '.jpg')))
-                write_data(file[:-4], image, '', train_text_file, output_train_dir_path)
-            else:
-                num_test_files += 1
-                # test_text_file.write(LISA_NEW_DATA_PATH + file.replace('.png', '.jpg'))
-                # image.save(os.path.join(output_train_dir_path, file.replace('.png', '.jpg')))
-                write_data(file[:-4], image, '', test_text_file, output_test_dir_path)
-        # except:
-            # continue
+print('Moving negative files to correct place...')
+for i in range(2041):
+    file = 'nosign' + str(i).zfill(5) + '.png'
+    print(file, end='\r')
+    image = Image.open(NEGATIVE_FILE_PATH + file)
+
+    train_file = rand.choices([True, False], [TRAIN_PERC, TEST_PERC])[0]
+    if train_file:
+        num_train_files += 1
+        write_data(file[:-4], image, '', train_text_file, output_train_dir_path)
+    else:
+        num_test_files += 1
+        write_data(file[:-4], image, '', test_text_file, output_test_dir_path)
 
 print('number of labels: ')
 print(len(labels.keys()))

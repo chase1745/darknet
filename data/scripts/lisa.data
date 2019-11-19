@@ -1,5 +1,5 @@
-classes= 47
-train  = /Users/timmcdermott/Documents/CSCE482/lisaData/train.txt
-valid  = /Users/timmcdermott/Documents/CSCE482/lisaData/test.txt
-names = /Users/timmcdermott/Documents/CSCE482/lisaData/lisa.names
-backup = /Users/timmcdermott/Documents/CSCE482/darknet/backup/
+classes= 11
+train  = /ec2-user/home/lisaData/train.txt
+valid  = /ec2-user/home/lisaData/test.txt
+names = /ec2-user/home/lisaData/lisa.names
+backup = /ec2-user/home/lisaData/darknet/backup/
