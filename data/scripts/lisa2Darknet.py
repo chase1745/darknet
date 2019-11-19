@@ -6,7 +6,7 @@ import os
 
 
 
-LISA_DOWNLOAD_PATH = '/Users/timmcdermott/Downloads/signDatabasePublicFramesOnly/'
+LISA_DOWNLOAD_PATH = '/Users/timmcdermott/Documents/signDatabasePublicFramesOnly/'
 LISA_NEW_DATA_PATH = '/Users/timmcdermott/Documents/CSCE482/lisaData/'
 ANNOTATIONS_FILE_PATH = LISA_DOWNLOAD_PATH + "allAnnotations.csv"
 NEGATIVE_FILE_PATH = LISA_DOWNLOAD_PATH + 'negatives/negativePics/'
@@ -30,6 +30,7 @@ def write_data(filename, input_img, darknet_format, text_file, output_dir):
     # SAVE TXT FILE
     with open(output_file_path + '.txt', "a+") as f:
         f.write(darknet_format)
+        f.write('\n')
 
 def calculate_darknet_format(input_img, row, labelNums):
     real_img_width, real_img_height = input_img.size
@@ -94,6 +95,7 @@ for imageList in labels.values():
     for imageTuple in imageList:
         image = Image.open(imageTuple[0])
         line = imageTuple[1]
+        filename = line[0].split("/")[-1][:-4]
 
         darknet_format = calculate_darknet_format(image, line, labelNums)
 
@@ -140,7 +142,8 @@ for root, dirs, files in os.walk(NEGATIVE_FILE_PATH):
 
 print('number of labels: ')
 print(len(labels.keys()))
-print(labels)
+for label, imageList in labels.items():
+    print(label + ' -- ' + str(len(imageList)))
 
 print("AFTER ADDING NEGATIVES -- Num train files: " + str(num_train_files) + ', num test files: ' + str(num_test_files))
 
