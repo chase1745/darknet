@@ -1,5 +1,5 @@
 classes= 11
-train  = /ec2-user/home/lisaData/train.txt
-valid  = /ec2-user/home/lisaData/test.txt
-names = /ec2-user/home/lisaData/lisa.names
-backup = /ec2-user/home/lisaData/darknet/backup/
+train  = /home/ec2-user/lisaData/train.txt
+valid  = /home/ec2-user/lisaData/test.txt
+names = /home/ec2-user/lisaData/lisa.names
+backup = /home/ec2-user/lisaData/darknet/backup/

@@ -6,8 +6,8 @@ import os
 
 
 
-LISA_DOWNLOAD_PATH = '/ec2-user/home/lisaDownload/'
-LISA_NEW_DATA_PATH = '/ec2-user/home/lisaData/'
+LISA_DOWNLOAD_PATH = '/home/ec2-user/lisaDownload/'
+LISA_NEW_DATA_PATH = '/home/ec2-user/lisaData/'
 ANNOTATIONS_FILE_PATH = LISA_DOWNLOAD_PATH + "allAnnotations.csv"
 NEGATIVE_FILE_PATH = LISA_DOWNLOAD_PATH + 'negatives/negativePics/'
 TRAIN_PERC = .8
