@@ -1,4 +1,4 @@
-classes= 11
+classes= 12
 train  = /home/ec2-user/lisaData/train.txt
 valid  = /home/ec2-user/lisaData/test.txt
 names = /home/ec2-user/lisaData/lisa.names
