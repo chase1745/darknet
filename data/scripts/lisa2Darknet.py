@@ -5,9 +5,11 @@ import random as rand
 import os
 
 
-
-LISA_DOWNLOAD_PATH = '/home/ec2-user/lisaDownload/'
-LISA_NEW_DATA_PATH = '/home/ec2-user/lisaData/'
+ROOT_PATH = '/home/ec2-user/'
+LISA_DOWNLOAD_PATH = ROOT_PATH + 'lisaDownload/'
+LISA_NEW_DATA_PATH = ROOT_PATH + 'lisaData/'
+CONE_DOWNLOAD_PATH = ROOT_PATH + 'coneData/'
+CONE_ANNOTATIONS_FILE_PATH = CONE_DOWNLOAD_PATH + 'ImageSets/Main/trainval.txt'
 ANNOTATIONS_FILE_PATH = LISA_DOWNLOAD_PATH + "allAnnotations.csv"
 NEGATIVE_FILE_PATH = LISA_DOWNLOAD_PATH + 'negatives/negativePics/'
 TRAIN_PERC = .8
@@ -91,6 +93,29 @@ output_test_dir_path = LISA_NEW_DATA_PATH + 'test/'
 labels = defaultdict(list)
 num_train_files, num_test_files = 0, 0
 
+# Get cone data first (separate dataset)
+print('Iterating through and moving cone files...')
+numCones = 0
+with open(CONE_ANNOTATIONS_FILE_PATH, 'r') as f:
+    for line in f.readlines():
+        numCones += 1
+        filename = line.rstrip()
+        print('File: ' + filename, end="\r")
+        image = Image.open(CONE_DOWNLOAD_PATH + 'JPEGImages/' + filename + '.jpg')
+        coneAnnotation = open(CONE_DOWNLOAD_PATH + 'anno3/' + filename + '.txt')
+
+        # Go through all annotations in file and write them all
+        for darknet_format in coneAnnotation.readlines():
+            train_file = rand.choices([True, False], [TRAIN_PERC, TEST_PERC])[0]
+
+            if train_file:
+                num_train_files += 1
+                write_data(filename, image, darknet_format.rstrip(), train_text_file, output_train_dir_path)
+            else:
+                num_test_files += 1
+                write_data(filename, image, darknet_format.rstrip(), test_text_file, output_test_dir_path)
+        coneAnnotation.close()
+
 # Get all annotations
 print('Iterating through annnotation file...')
 for i, line in enumerate(gtReader):
@@ -105,7 +130,8 @@ for i, line in enumerate(gtReader):
     labels[label].append((file_path, line))
 
 # Labels must be integers in annotations, so create this map here
-labelNums = {label:i for i, label in enumerate(labels.keys())}
+labelNums = {label:i+1 for i, label in enumerate(labels.keys())}
+labelNums['cone'] = 0
 
 # Go through all annotations, convert them to darknet format, and save images and txt files in correct location
 print('Converting annotations to darknet and moving all images...')
@@ -139,7 +165,7 @@ with open(LISA_NEW_DATA_PATH + 'lisa.names', 'w+') as f:
 
 # Move negatives (images without labels) to test and train
 print('Moving negative files to correct place...')
-for i in range(2041):
+for i in range(4000): # Just get 4000 imgs
     file = 'nosign' + str(i).zfill(5) + '.png'
     print(file, end='\r')
     image = Image.open(NEGATIVE_FILE_PATH + file)
@@ -156,6 +182,7 @@ print('number of labels: ')
 print(len(labels.keys()))
 for label, imageList in labels.items():
     print(label + ' -- ' + str(len(imageList)))
+print('cone -- ' + str(numCones))
 
 print("AFTER ADDING NEGATIVES -- Num train files: " + str(num_train_files) + ', num test files: ' + str(num_test_files))
 
