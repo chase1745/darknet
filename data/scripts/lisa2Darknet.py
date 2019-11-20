@@ -8,7 +8,7 @@ import os
 ROOT_PATH = '/home/ec2-user/'
 LISA_DOWNLOAD_PATH = ROOT_PATH + 'lisaDownload/'
 LISA_NEW_DATA_PATH = ROOT_PATH + 'lisaData/'
-CONE_DOWNLOAD_PATH = ROOT_PATH + 'coneData/'
+CONE_DOWNLOAD_PATH = ROOT_PATH + 'coneData/VOC2007/'
 CONE_ANNOTATIONS_FILE_PATH = CONE_DOWNLOAD_PATH + 'ImageSets/Main/trainval.txt'
 ANNOTATIONS_FILE_PATH = LISA_DOWNLOAD_PATH + "allAnnotations.csv"
 NEGATIVE_FILE_PATH = LISA_DOWNLOAD_PATH + 'negatives/negativePics/'
